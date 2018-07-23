@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns:int="http://www.springframework.org/schema/integration"
+      xmlns:int-redis="http://www.springframework.org/schema/integration/redis"
+       xmlns:p="http://www.springframework.org/schema/p"
+      xsi:schemaLocation="http://www.springframework.org/schema/integration/redis
+      http://www.springframework.org/schema/integration/redis/spring-integration-redis.xsd
+     http://www.springframework.org/schema/integration
+     http://www.springframework.org/schema/integration/spring-integration.xsd
+     http://www.springframework.org/schema/beans
+     http://www.springframework.org/schema/beans/spring-beans.xsd">
+     
+    <!--  <int:channel id="eventChannelJson"/>
+     
+      <int-redis:queue-outbound-channel-adapter
+           id="event-outbound-channel-adapter"
+           channel="eventChannelJson"
+           serializer="serializer"
+           auto-startup="true" connection-factory="redisConnectionFactory"
+           queue="my-event-queue"  /> 
+           
+             <int:gateway id="eventChannelGateway"  service-interface="com.uppi.poc.RedisChannelGateway" error-channel="errorChannel" default-request-channel="eventChannelJson" />
+          
+           -->
+           
+           <bean id="jconfiguration" class="redis.clients.jedis.JedisPoolConfig">
+           		<property name="maxTotal" value="128" />
+           </bean>
+           
+           <bean id="redisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+           		<property name="hostName" value="localhost"></property>
+           		<property name="port" value="6379"></property>
+           		<property name="poolConfig">
+           			 <bean  class="redis.clients.jedis.JedisPoolConfig">
+           				<property name="maxTotal" value="128" />
+           			</bean>
+           		</property>
+           		<property name="password" value="uppi" />
+           		<property name="usePool" value="true" />
+           		
+           </bean>
+           
+            <bean id="serializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+            
+            
+            
+            
+  
+  <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+  <property name="connectionFactory" ref="redisConnectionFactory"></property>  
+  <property name="defaultSerializer" ref="serializer"></property>
+  </bean>
+  
+  
+  <bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate" p:connection-factory-ref="redisConnectionFactory" p:enable-transaction-support="false"/>  
+
+           
+</beans>
